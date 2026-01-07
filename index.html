@@ -43,7 +43,7 @@
             --safe-area-top: env(safe-area-inset-top);
             --safe-area-bottom: env(safe-area-inset-bottom);
             --safe-area-left: env(safe-area-inset-left);
-            --safe-area-right: env(safe-area-inset-right);
+            --safe-area-right: env(safe-area-right);
         }
         
         * {
@@ -351,6 +351,22 @@
             background: linear-gradient(135deg, #ffc107 0%, #ffda6a 100%);
             color: var(--viola-scuro);
             box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
+        }
+        
+        .btn-royal {
+            background: linear-gradient(135deg, #3C096C 0%, #7B2CBF 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(60, 9, 108, 0.3);
+        }
+        
+        .btn-royal:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(60, 9, 108, 0.4);
         }
         
         .btn-large {
@@ -942,8 +958,92 @@
             box-shadow: var(--ombra-forte);
         }
         
-        /* ===== MODAL ===== */
-        .modal {
+        /* ===== MODAL PER ADMIN ACCESS ===== */
+        .modal-admin {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-admin-content {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: scaleIn 0.3s ease;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            border: 3px solid var(--oro-laurea);
+        }
+        
+        .modal-admin-content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradiente-oro);
+        }
+        
+        .modal-admin-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--viola-scuro);
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+        }
+        
+        .modal-admin-icon {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-admin-icon i {
+            font-size: 4rem;
+            color: var(--viola-chiaro);
+            background: var(--gradiente-laurea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .modal-admin-input {
+            width: 100%;
+            padding: 20px;
+            border: 2px solid var(--grigio-chiaro);
+            border-radius: 15px;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .modal-admin-input:focus {
+            outline: none;
+            border-color: var(--viola-chiaro);
+            box-shadow: 0 0 0 4px rgba(157, 78, 221, 0.15);
+        }
+        
+        .modal-admin-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        /* ===== MODAL PER VISUALIZZAZIONE FOTO ===== */
+        .modal-photo {
             display: none;
             position: fixed;
             top: 0;
@@ -951,7 +1051,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.95);
-            z-index: 2000;
+            z-index: 2001;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -965,7 +1065,7 @@
             to { opacity: 1; }
         }
         
-        .modal-content {
+        .modal-photo-content {
             max-width: 95%;
             max-height: 95%;
             position: relative;
@@ -977,7 +1077,7 @@
             to { transform: scale(1); opacity: 1; }
         }
         
-        .modal-img {
+        .modal-photo-img {
             max-width: 100%;
             max-height: 85vh;
             border-radius: 15px;
@@ -1047,6 +1147,15 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            .modal-admin-content {
+                padding: 30px;
+                width: 95%;
+            }
+            
+            .modal-admin-title {
+                font-size: 1.8rem;
+            }
+            
             .modal-close {
                 top: -50px;
                 right: 10px;
@@ -1097,6 +1206,19 @@
                 padding: 18px 30px;
             }
             
+            .modal-admin-content {
+                padding: 25px;
+            }
+            
+            .modal-admin-title {
+                font-size: 1.6rem;
+            }
+            
+            .modal-admin-input {
+                padding: 15px;
+                font-size: 1.1rem;
+            }
+            
             .modal-close {
                 top: -40px;
                 right: 0;
@@ -1133,7 +1255,7 @@
                 height: 160px;
             }
             
-            .modal-content {
+            .modal-photo-content {
                 max-width: 100%;
                 max-height: 100%;
             }
@@ -1168,8 +1290,13 @@
                 height: 120px;
             }
             
-            .modal-content {
+            .modal-photo-content {
                 max-height: 90vh;
+            }
+            
+            .modal-admin-content {
+                max-height: 90vh;
+                overflow-y: auto;
             }
         }
         
@@ -1291,8 +1418,8 @@
                     <i class="fas fa-arrow-right btn-icon"></i> Vai all'Album Fotografico
                 </button>
                 
-                <button id="adminBtn" class="btn btn-secondary btn-large">
-                    <i class="fas fa-lock btn-icon"></i> Accesso Admin
+                <button id="adminBtn" class="btn btn-royal btn-large">
+                    <i class="fas fa-crown btn-icon"></i> Accesso Admin
                 </button>
             </div>
             
@@ -1511,18 +1638,23 @@
                 </p>
             </div>
             
-            <!-- QR CODE -->
+            <!-- QR CODE FISSO PER GITHUB PAGES -->
             <div class="qr-section">
                 <h3 style="color: var(--viola-scuro); margin-bottom: 20px; font-family: 'Playfair Display', serif; font-size: 1.8rem;">
                     <i class="fas fa-qrcode"></i> QR Code per gli Ospiti
                 </h3>
                 <div id="qrcode"></div>
                 <p style="color: #666; margin-top: 15px; font-size: 1rem;">
-                    Scansiona questo QR code con la fotocamera del telefono per accedere direttamente alla pagina
+                    Scansiona questo QR code con la fotocamera del telefono per accedere direttamente alla pagina dell'album
                 </p>
-                <button id="downloadQRBtn" class="btn btn-warning" style="margin-top: 25px;">
-                    <i class="fas fa-download btn-icon"></i> Scarica QR Code
-                </button>
+                <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button id="downloadQRBtn" class="btn btn-warning">
+                        <i class="fas fa-download btn-icon"></i> Scarica QR Code
+                    </button>
+                    <button id="copyLinkBtn" class="btn btn-secondary">
+                        <i class="fas fa-copy btn-icon"></i> Copia Link
+                    </button>
+                </div>
             </div>
             
             <!-- PULSANTE CHIUDI ADMIN -->
@@ -1579,17 +1711,43 @@
         </p>
     </div>
 
+    <!-- MODAL PER ACCESSO ADMIN -->
+    <div class="modal-admin" id="adminModal">
+        <div class="modal-admin-content">
+            <div class="modal-admin-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h2 class="modal-admin-title">Accesso Admin</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 25px; font-size: 1.1rem;">
+                Inserisci il codice admin per accedere al pannello di controllo
+            </p>
+            <input type="password" 
+                   id="adminCodeInput" 
+                   class="modal-admin-input" 
+                   placeholder="Codice Admin"
+                   maxlength="10">
+            <div class="modal-admin-buttons">
+                <button id="modalAdminConfirm" class="btn btn-royal">
+                    <i class="fas fa-check btn-icon"></i> Conferma
+                </button>
+                <button id="modalAdminCancel" class="btn btn-secondary">
+                    <i class="fas fa-times btn-icon"></i> Annulla
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PER VISUALIZZAZIONE FOTO -->
-    <div class="modal" id="photoModal">
-        <div class="modal-content">
-            <img class="modal-img" id="modalImage" src="" alt="Foto della laurea">
-            <button class="modal-close" onclick="closeModal()">
+    <div class="modal-photo" id="photoModal">
+        <div class="modal-photo-content">
+            <img class="modal-photo-img" id="modalImage" src="" alt="Foto della laurea">
+            <button class="modal-close" onclick="closePhotoModal()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPALE CORRETTO -->
+    <!-- SCRIPT PRINCIPALE -->
     <script>
         // ========== CONFIGURAZIONE FIREBASE ==========
         const firebaseConfig = {
@@ -1623,13 +1781,16 @@
         let photosListener = null;
         let isAdminPanel = false;
 
+        // ========== URL FISSO PER GITHUB PAGES ==========
+        const GITHUB_PAGES_URL = 'https://angelo1234565.github.io/FotoLaureaMati/';
+
         // ========== INIZIALIZZAZIONE ==========
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🎓 Sistema Laurea Mati - Caricato');
             
             initElements();
             checkUser();
-            generateQRCode();
+            generateQRCode(); // Genera QR code con URL fisso
             
             // Gestione orientamento
             detectOrientation();
@@ -1652,10 +1813,17 @@
                 if (e.key === 'Enter') handleUserContinue();
             });
             
-            // Admin
-            document.getElementById('adminBtn').addEventListener('click', handleAdminAccess);
+            // Admin - ora usa il modal
+            document.getElementById('adminBtn').addEventListener('click', showAdminModal);
+            document.getElementById('modalAdminConfirm').addEventListener('click', handleAdminAccess);
+            document.getElementById('modalAdminCancel').addEventListener('click', hideAdminModal);
+            document.getElementById('adminCodeInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleAdminAccess();
+            });
+            
             document.getElementById('closeAdminBtn').addEventListener('click', closeAdminPanel);
             document.getElementById('downloadQRBtn').addEventListener('click', downloadQRCode);
+            document.getElementById('copyLinkBtn').addEventListener('click', copyLink);
             
             // Upload
             document.getElementById('uploadBtn').addEventListener('click', () => {
@@ -1688,6 +1856,18 @@
             document.getElementById('barDownloadBtn').addEventListener('click', downloadSelectedPhotos);
             document.getElementById('barCloseBtn').addEventListener('click', closeSelectionBar);
             
+            // Chiudi modal con ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('adminModal').style.display === 'flex') {
+                        hideAdminModal();
+                    }
+                    if (document.getElementById('photoModal').style.display === 'flex') {
+                        closePhotoModal();
+                    }
+                }
+            });
+            
             // Touch events per mobile
             setupTouchEvents();
         }
@@ -1707,6 +1887,21 @@
                     this.style.transform = '';
                 });
             });
+        }
+
+        // ========== MODAL ADMIN ==========
+        function showAdminModal() {
+            const modal = document.getElementById('adminModal');
+            const input = document.getElementById('adminCodeInput');
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                input.focus();
+            }, 100);
+        }
+
+        function hideAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+            document.getElementById('adminCodeInput').value = '';
         }
 
         // ========== GESTIONE UTENTE ==========
@@ -2023,7 +2218,7 @@
             if (!photos || photos.length === 0) {
                 if (emptyMsg) emptyMsg.style.display = 'block';
                 if (adminGallery) adminGallery.innerHTML = '';
-                updateSelectionBar(); // IMPORTANTE: aggiorna barra selezione
+                updateSelectionBar();
                 return;
             }
             
@@ -2117,7 +2312,7 @@
             });
         }
 
-        // ========== SELEZIONE FOTO - CORRETTO ==========
+        // ========== SELEZIONE FOTO ==========
         window.togglePhotoSelection = function(photoId, isSelected) {
             if (isSelected) {
                 selectedPhotos.add(photoId);
@@ -2170,7 +2365,7 @@
             displayAdminGallery();
         }
 
-        // ========== ELIMINAZIONE FOTO - CORRETTO ==========
+        // ========== ELIMINAZIONE FOTO ==========
         async function deleteFromImgBB(imageId) {
             try {
                 if (!imageId) {
@@ -2508,9 +2703,8 @@
             document.getElementById('totalSize').textContent = (totalSize / 1024 / 1024).toFixed(1) + ' MB';
         }
 
-        // ========== QR CODE - CORRETTO ==========
+        // ========== QR CODE FISSO PER GITHUB PAGES ==========
         function generateQRCode() {
-            const currentUrl = window.location.href;
             const qrCodeDiv = document.getElementById('qrcode');
             
             if (!qrCodeDiv) return;
@@ -2521,8 +2715,8 @@
                 // Crea un canvas per il QR code
                 const canvas = document.createElement('canvas');
                 
-                // Genera il QR code sul canvas
-                QRCode.toCanvas(canvas, currentUrl, {
+                // Genera il QR code sul canvas con URL FISSO
+                QRCode.toCanvas(canvas, GITHUB_PAGES_URL, {
                     width: 200,
                     margin: 2,
                     color: { 
@@ -2533,14 +2727,14 @@
                 }, function (error) {
                     if (error) {
                         console.error('❌ Errore generazione QR:', error);
-                        // Fallback: mostra messaggio
+                        // Fallback: mostra URL
                         qrCodeDiv.innerHTML = `
                             <div style="text-align: center; padding: 20px;">
                                 <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff9800;"></i>
                                 <p style="margin-top: 10px; color: #666;">
                                     QR Code non disponibile<br>
                                     Condividi il link: <br>
-                                    <input type="text" value="${currentUrl}" readonly 
+                                    <input type="text" value="${GITHUB_PAGES_URL}" readonly 
                                            style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px;"
                                            onclick="this.select()">
                                 </p>
@@ -2566,27 +2760,13 @@
                             Condividi il link dell'album:
                         </p>
                         <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid var(--oro-laurea);">
-                            <input type="text" value="${currentUrl}" readonly 
+                            <input type="text" value="${GITHUB_PAGES_URL}" readonly 
                                    style="width: 100%; padding: 10px; border: none; text-align: center; font-size: 0.9rem;"
                                    onclick="this.select()">
-                            <button onclick="copyLink()" class="btn btn-small" style="margin-top: 10px; background: var(--viola-chiaro); color: white;">
-                                <i class="fas fa-copy"></i> Copia Link
-                            </button>
                         </div>
                     </div>
                 `;
             }
-        }
-
-        // Funzione per copiare il link
-        function copyLink() {
-            const currentUrl = window.location.href;
-            navigator.clipboard.writeText(currentUrl).then(() => {
-                showMessage('✅ Link copiato negli appunti!', 'success');
-            }).catch(err => {
-                console.error('Errore copia:', err);
-                showMessage('❌ Errore nella copia del link', 'error');
-            });
         }
 
         function downloadQRCode() {
@@ -2609,14 +2789,26 @@
             }
         }
 
+        function copyLink() {
+            navigator.clipboard.writeText(GITHUB_PAGES_URL).then(() => {
+                showMessage('✅ Link copiato negli appunti!', 'success');
+            }).catch(err => {
+                console.error('Errore copia:', err);
+                showMessage('❌ Errore nella copia del link', 'error');
+            });
+        }
+
         // ========== ADMIN FUNCTIONS ==========
         function handleAdminAccess() {
-            const adminCode = prompt('Inserisci il codice admin:');
+            const adminCode = document.getElementById('adminCodeInput').value;
             
             if (adminCode === 'MATI2026') {
+                hideAdminModal();
                 showAdminPanel();
             } else {
                 alert('Codice admin non valido');
+                document.getElementById('adminCodeInput').value = '';
+                document.getElementById('adminCodeInput').focus();
             }
         }
 
@@ -2767,7 +2959,7 @@
             }
         }
 
-        // ========== MODAL ==========
+        // ========== MODAL FOTO ==========
         window.openPhotoModal = function(url, author, date) {
             const modalImage = document.getElementById('modalImage');
             const modal = document.getElementById('photoModal');
@@ -2781,7 +2973,7 @@
             }
         };
 
-        window.closeModal = function() {
+        window.closePhotoModal = function() {
             const modal = document.getElementById('photoModal');
             const modalImage = document.getElementById('modalImage');
             
@@ -2797,14 +2989,9 @@
             document.title = '🎓 Album Fotografico - Laurea Mati';
         };
 
-        // Chiudi modal con ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
-
-        // Chiudi modal cliccando fuori
+        // Chiudi modal foto cliccando fuori
         document.getElementById('photoModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'photoModal') closeModal();
+            if (e.target.id === 'photoModal') closePhotoModal();
         });
 
         // ========== GESTIONE MOBILE ==========
