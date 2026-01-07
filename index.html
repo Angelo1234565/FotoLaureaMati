@@ -885,6 +885,8 @@
             box-shadow: var(--ombra-sottile);
             position: relative;
             z-index: 1;
+            min-height: 220px;
+            min-width: 220px;
         }
         
         /* ===== FOOTER ===== */
@@ -1587,7 +1589,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPALE -->
+    <!-- SCRIPT PRINCIPALE CORRETTO -->
     <script>
         // ========== CONFIGURAZIONE FIREBASE ==========
         const firebaseConfig = {
@@ -1619,6 +1621,7 @@
         let photos = [];
         let selectedPhotos = new Set();
         let photosListener = null;
+        let isAdminPanel = false;
 
         // ========== INIZIALIZZAZIONE ==========
         document.addEventListener('DOMContentLoaded', function() {
@@ -1632,9 +1635,6 @@
             detectOrientation();
             window.addEventListener('resize', detectOrientation);
             window.addEventListener('orientationchange', detectOrientation);
-            
-            // Previeni zoom su input in mobile
-            preventZoomOnInput();
         });
 
         // ========== RILEVA ORIENTAMENTO ==========
@@ -1642,17 +1642,6 @@
             const isPortrait = window.innerHeight > window.innerWidth;
             document.body.classList.toggle('portrait', isPortrait);
             document.body.classList.toggle('landscape', !isPortrait);
-        }
-
-        // ========== PREVIENI ZOOM SU INPUT MOBILE ==========
-        function preventZoomOnInput() {
-            if (window.innerWidth <= 768) {
-                document.addEventListener('touchstart', function(event) {
-                    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-                        event.target.style.fontSize = '16px';
-                    }
-                });
-            }
         }
 
         // ========== INIZIALIZZA ELEMENTI DOM ==========
@@ -1715,20 +1704,6 @@
                     this.style.transform = '';
                 });
                 btn.addEventListener('touchcancel', function() {
-                    this.style.transform = '';
-                });
-            });
-            
-            // Touch feedback per card
-            const cards = document.querySelectorAll('.photo-card, .admin-photo-card');
-            cards.forEach(card => {
-                card.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.98)';
-                });
-                card.addEventListener('touchend', function() {
-                    this.style.transform = '';
-                });
-                card.addEventListener('touchcancel', function() {
                     this.style.transform = '';
                 });
             });
@@ -1960,7 +1935,10 @@
             }
             
             // Mostra loading galleria
-            document.getElementById('galleryLoading').style.display = 'block';
+            const galleryLoading = document.getElementById('galleryLoading');
+            if (galleryLoading) {
+                galleryLoading.style.display = 'block';
+            }
             
             // Ascolta cambiamenti in tempo reale
             photosListener = database.ref('photos').orderByChild('timestamp').limitToLast(200).on('value', (snapshot) => {
@@ -1980,14 +1958,20 @@
                 
                 // Aggiorna le gallerie
                 displayGallery();
-                displayAdminGallery();
+                if (isAdminPanel) {
+                    displayAdminGallery();
+                }
                 updateStats();
                 
                 // Nascondi loading
-                document.getElementById('galleryLoading').style.display = 'none';
+                if (galleryLoading) {
+                    galleryLoading.style.display = 'none';
+                }
             }, (error) => {
                 console.error('❌ Errore caricamento foto:', error);
-                document.getElementById('galleryLoading').style.display = 'none';
+                if (galleryLoading) {
+                    galleryLoading.style.display = 'none';
+                }
                 showMessage('Errore nel caricamento della galleria', 'error');
             });
         }
@@ -2015,7 +1999,7 @@
                              alt="${photo.fileName || 'Foto della laurea'}"
                              loading="lazy"
                              class="photo-image"
-                             onclick="openPhotoModal('${photo.url}', '${escapeHtml(photo.userName)}', '${formatDate(photo.timestamp)}')"
+                             onclick="openPhotoModal('${photo.url.replace(/'/g, "\\'")}', '${escapeHtml(photo.userName)}', '${formatDate(photo.timestamp)}')"
                              style="cursor: pointer;">
                         <div class="photo-overlay"></div>
                         <div class="photo-info">
@@ -2039,6 +2023,7 @@
             if (!photos || photos.length === 0) {
                 if (emptyMsg) emptyMsg.style.display = 'block';
                 if (adminGallery) adminGallery.innerHTML = '';
+                updateSelectionBar(); // IMPORTANTE: aggiorna barra selezione
                 return;
             }
             
@@ -2051,10 +2036,10 @@
                         <input type="checkbox" 
                                class="photo-checkbox"
                                ${selectedPhotos.has(photo.id) ? 'checked' : ''}
-                               onchange="togglePhotoSelection('${photo.id}', this.checked)">
+                               onchange="togglePhotoSelection('${photo.id.replace(/'/g, "\\'")}', this.checked)">
                         <img src="${photo.thumb || photo.url}" 
                              alt="${photo.fileName || 'Foto'}"
-                             onclick="openPhotoModal('${photo.url}', '${escapeHtml(photo.userName)}', '${formatDate(photo.timestamp)}')"
+                             onclick="openPhotoModal('${photo.url.replace(/'/g, "\\'")}', '${escapeHtml(photo.userName)}', '${formatDate(photo.timestamp)}')"
                              style="cursor: pointer;">
                         <div class="admin-photo-info">
                             <div style="font-weight: 600; color: var(--viola-laurea);">
@@ -2069,12 +2054,12 @@
                             <div class="photo-actions">
                                 <button class="btn btn-danger btn-small" 
                                         style="padding: 5px 10px; font-size: 0.8rem;"
-                                        onclick="deleteSinglePhoto('${photo.id}', '${photo.imgbbId || ''}')">
+                                        onclick="deleteSinglePhoto('${photo.id.replace(/'/g, "\\'")}', '${(photo.imgbbId || '').replace(/'/g, "\\'")}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <button class="btn btn-success btn-small" 
                                         style="padding: 5px 10px; font-size: 0.8rem;"
-                                        onclick="downloadSinglePhoto('${photo.id}')">
+                                        onclick="downloadSinglePhoto('${photo.id.replace(/'/g, "\\'")}')">
                                     <i class="fas fa-download"></i>
                                 </button>
                             </div>
@@ -2088,6 +2073,7 @@
 
         // ========== UTILITY FUNCTIONS ==========
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -2131,7 +2117,7 @@
             });
         }
 
-        // ========== SELEZIONE FOTO ==========
+        // ========== SELEZIONE FOTO - CORRETTO ==========
         window.togglePhotoSelection = function(photoId, isSelected) {
             if (isSelected) {
                 selectedPhotos.add(photoId);
@@ -2139,13 +2125,13 @@
                 selectedPhotos.delete(photoId);
             }
             
+            updateSelectionBar();
+            
             // Aggiorna lo stile della card
             const card = document.querySelector(`.admin-photo-card[data-id="${photoId}"]`);
             if (card) {
                 card.classList.toggle('selected', isSelected);
             }
-            
-            updateSelectionBar();
         };
 
         function selectAllPhotos() {
@@ -2171,7 +2157,11 @@
             }
             
             if (bar) {
-                bar.style.display = count > 0 ? 'flex' : 'none';
+                if (count > 0) {
+                    bar.style.display = 'flex';
+                } else {
+                    bar.style.display = 'none';
+                }
             }
         }
 
@@ -2180,7 +2170,7 @@
             displayAdminGallery();
         }
 
-        // ========== ELIMINAZIONE FOTO ==========
+        // ========== ELIMINAZIONE FOTO - CORRETTO ==========
         async function deleteFromImgBB(imageId) {
             try {
                 if (!imageId) {
@@ -2205,6 +2195,9 @@
                 
                 // Elimina da Database
                 await database.ref('photos/' + photoId).remove();
+                
+                // Rimuovi dalla selezione
+                selectedPhotos.delete(photoId);
                 
                 // Prova a eliminare da ImgBB
                 if (imgbbId) {
@@ -2235,7 +2228,10 @@
             let deletedCount = 0;
             let errors = 0;
             
-            for (const photoId of Array.from(selectedPhotos)) {
+            // Crea array con gli ID da eliminare
+            const photosToDelete = Array.from(selectedPhotos);
+            
+            for (const photoId of photosToDelete) {
                 try {
                     const photo = photos.find(p => p.id === photoId);
                     
@@ -2253,6 +2249,9 @@
                     
                     deletedCount++;
                     
+                    // Rimuovi dalla selezione
+                    selectedPhotos.delete(photoId);
+                    
                     // Aggiorna messaggio ogni 5 foto
                     if (deletedCount % 5 === 0) {
                         showMessage(`⏳ Eliminate ${deletedCount}/${count} foto...`, 'success');
@@ -2264,8 +2263,11 @@
                 }
             }
             
-            // Svuota selezione
+            // IMPORTANTE: Svuota completamente la selezione
             selectedPhotos.clear();
+            
+            // Aggiorna la galleria admin
+            displayAdminGallery();
             
             if (errors === 0) {
                 showMessage(`✅ ${deletedCount} foto eliminate con successo`, 'success');
@@ -2506,7 +2508,7 @@
             document.getElementById('totalSize').textContent = (totalSize / 1024 / 1024).toFixed(1) + ' MB';
         }
 
-        // ========== QR CODE ==========
+        // ========== QR CODE - CORRETTO ==========
         function generateQRCode() {
             const currentUrl = window.location.href;
             const qrCodeDiv = document.getElementById('qrcode');
@@ -2516,19 +2518,75 @@
             qrCodeDiv.innerHTML = '';
             
             try {
-                QRCode.toCanvas(qrCodeDiv, currentUrl, {
+                // Crea un canvas per il QR code
+                const canvas = document.createElement('canvas');
+                
+                // Genera il QR code sul canvas
+                QRCode.toCanvas(canvas, currentUrl, {
                     width: 200,
                     margin: 2,
                     color: { 
                         dark: '#5A189A',
                         light: '#FFFFFF'
-                    }
+                    },
+                    errorCorrectionLevel: 'H'
                 }, function (error) {
-                    if (error) console.error('❌ Errore generazione QR:', error);
+                    if (error) {
+                        console.error('❌ Errore generazione QR:', error);
+                        // Fallback: mostra messaggio
+                        qrCodeDiv.innerHTML = `
+                            <div style="text-align: center; padding: 20px;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff9800;"></i>
+                                <p style="margin-top: 10px; color: #666;">
+                                    QR Code non disponibile<br>
+                                    Condividi il link: <br>
+                                    <input type="text" value="${currentUrl}" readonly 
+                                           style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                                           onclick="this.select()">
+                                </p>
+                            </div>
+                        `;
+                    } else {
+                        // Aggiungi il canvas al div
+                        qrCodeDiv.appendChild(canvas);
+                        
+                        // Aggiungi stili
+                        canvas.style.display = 'block';
+                        canvas.style.margin = '0 auto';
+                        canvas.style.borderRadius = '10px';
+                        canvas.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                    }
                 });
             } catch (error) {
                 console.error('❌ Errore QR:', error);
+                // Fallback alternativo
+                qrCodeDiv.innerHTML = `
+                    <div style="text-align: center; padding: 30px;">
+                        <p style="color: var(--viola-laurea); font-weight: bold; margin-bottom: 10px;">
+                            Condividi il link dell'album:
+                        </p>
+                        <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid var(--oro-laurea);">
+                            <input type="text" value="${currentUrl}" readonly 
+                                   style="width: 100%; padding: 10px; border: none; text-align: center; font-size: 0.9rem;"
+                                   onclick="this.select()">
+                            <button onclick="copyLink()" class="btn btn-small" style="margin-top: 10px; background: var(--viola-chiaro); color: white;">
+                                <i class="fas fa-copy"></i> Copia Link
+                            </button>
+                        </div>
+                    </div>
+                `;
             }
+        }
+
+        // Funzione per copiare il link
+        function copyLink() {
+            const currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl).then(() => {
+                showMessage('✅ Link copiato negli appunti!', 'success');
+            }).catch(err => {
+                console.error('Errore copia:', err);
+                showMessage('❌ Errore nella copia del link', 'error');
+            });
         }
 
         function downloadQRCode() {
@@ -2544,7 +2602,7 @@
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 
-                showMessage('QR Code scaricato', 'success');
+                showMessage('✅ QR Code scaricato', 'success');
             } catch (error) {
                 console.error('❌ Errore download QR:', error);
                 showMessage('Errore nel download del QR Code', 'error');
@@ -2563,9 +2621,14 @@
         }
 
         function showAdminPanel() {
+            isAdminPanel = true;
             hideApp();
             document.getElementById('userSection').style.display = 'none';
             document.getElementById('adminSection').style.display = 'block';
+            
+            // Svuota selezione quando si entra in admin
+            selectedPhotos.clear();
+            
             displayAdminGallery();
             updateStats();
             
@@ -2576,6 +2639,7 @@
         }
 
         function closeAdminPanel() {
+            isAdminPanel = false;
             document.getElementById('adminSection').style.display = 'none';
             selectedPhotos.clear();
             showUserSection();
@@ -2589,6 +2653,7 @@
         }
 
         function showApp() {
+            isAdminPanel = false;
             document.getElementById('userSection').style.display = 'none';
             document.getElementById('appSection').style.display = 'block';
             
@@ -2753,19 +2818,6 @@
                 }
             }
         }, true);
-
-        // Salva ultima posizione scroll
-        let lastScrollPosition = 0;
-        window.addEventListener('scroll', function() {
-            lastScrollPosition = window.pageYOffset;
-        });
-
-        // Ripristina posizione scroll dopo input
-        document.addEventListener('focusout', function() {
-            setTimeout(() => {
-                window.scrollTo(0, lastScrollPosition);
-            }, 100);
-        });
     </script>
 </body>
 </html>
