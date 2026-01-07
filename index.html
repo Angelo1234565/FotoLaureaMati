@@ -9,9 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
-    <!-- QR Code Generator -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    
     <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
@@ -1063,51 +1060,6 @@
             gap: 8px;
         }
         
-        /* ===== QR CODE SECTION ===== */
-        .qr-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: clamp(12px, 2vw, 15px);
-            padding: clamp(20px, 4vw, 35px);
-            text-align: center;
-            margin-top: clamp(20px, 4vw, 30px);
-            border: 3px dashed var(--viola-chiaro);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .qr-section::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, var(--oro-laurea), transparent 30%);
-            animation: rotate 8s linear infinite;
-            opacity: 0.1;
-        }
-        
-        #qrcode {
-            margin: 15px auto;
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            display: inline-block;
-            box-shadow: var(--ombra-sottile);
-            position: relative;
-            z-index: 1;
-            min-height: 200px;
-            min-width: 200px;
-        }
-        
-        @media (max-width: 768px) {
-            #qrcode {
-                min-height: 180px;
-                min-width: 180px;
-                padding: 12px;
-            }
-        }
-        
         /* ===== FOOTER ===== */
         .footer {
             text-align: center;
@@ -1433,11 +1385,6 @@
             .modal-photo-content {
                 max-width: 100%;
                 max-height: 100%;
-            }
-            
-            #qrcode {
-                min-height: 160px;
-                min-width: 160px;
             }
         }
         
@@ -1818,25 +1765,6 @@
                 </p>
             </div>
             
-            <!-- QR CODE FISSO PER GITHUB PAGES -->
-            <div class="qr-section">
-                <h3 style="color: var(--viola-scuro); margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.6rem;">
-                    <i class="fas fa-qrcode"></i> QR Code per gli Ospiti
-                </h3>
-                <div id="qrcode"></div>
-                <p style="color: #666; margin-top: 12px; font-size: 0.95rem;">
-                    Scansiona questo QR code con la fotocamera del telefono per accedere direttamente alla pagina dell'album
-                </p>
-                <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                    <button id="downloadQRBtn" class="btn btn-warning">
-                        <i class="fas fa-download btn-icon"></i> Scarica QR Code
-                    </button>
-                    <button id="copyLinkBtn" class="btn btn-secondary">
-                        <i class="fas fa-copy btn-icon"></i> Copia Link
-                    </button>
-                </div>
-            </div>
-            
             <!-- PULSANTE CHIUDI ADMIN -->
             <div style="text-align: center; margin-top: 30px;">
                 <button id="closeAdminBtn" class="btn btn-secondary">
@@ -1961,16 +1889,12 @@
         let photosListener = null;
         let isAdminPanel = false;
 
-        // ========== URL FISSO PER GITHUB PAGES ==========
-        const GITHUB_PAGES_URL = 'https://angelo1234565.github.io/FotoLaureaMati/';
-
         // ========== INIZIALIZZAZIONE ==========
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🎓 Sistema Laurea Mati - Caricato');
             
             initElements();
             checkUser();
-            generateQRCode(); // Genera QR code con URL fisso
             
             // Gestione orientamento
             detectOrientation();
@@ -2030,8 +1954,6 @@
             });
             
             document.getElementById('closeAdminBtn').addEventListener('click', closeAdminPanel);
-            document.getElementById('downloadQRBtn').addEventListener('click', downloadQRCode);
-            document.getElementById('copyLinkBtn').addEventListener('click', copyLink);
             
             // Upload
             document.getElementById('uploadBtn').addEventListener('click', () => {
@@ -2949,134 +2871,6 @@
             // Spazio totale
             const totalSize = photos.reduce((sum, p) => sum + (p.fileSize || 0), 0);
             document.getElementById('totalSize').textContent = (totalSize / 1024 / 1024).toFixed(1) + ' MB';
-        }
-
-        // ========== QR CODE FISSO PER GITHUB PAGES ==========
-        function generateQRCode() {
-            const qrCodeDiv = document.getElementById('qrcode');
-            
-            if (!qrCodeDiv) return;
-            
-            qrCodeDiv.innerHTML = '';
-            
-            try {
-                // Crea un div per il QR code
-                const qrDiv = document.createElement('div');
-                qrDiv.style.textAlign = 'center';
-                
-                // Usa la libreria QRCode per generare il QR code
-                QRCode.toDataURL(GITHUB_PAGES_URL, {
-                    width: 200,
-                    margin: 2,
-                    color: { 
-                        dark: '#5A189A',
-                        light: '#FFFFFF'
-                    },
-                    errorCorrectionLevel: 'H'
-                }, function (error, url) {
-                    if (error) {
-                        console.error('❌ Errore generazione QR:', error);
-                        // Fallback: mostra URL
-                        qrCodeDiv.innerHTML = `
-                            <div style="text-align: center; padding: 20px;">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: #ff9800;"></i>
-                                <p style="margin-top: 10px; color: #666;">
-                                    QR Code non disponibile<br>
-                                    Condividi il link: <br>
-                                    <input type="text" value="${GITHUB_PAGES_URL}" readonly 
-                                           style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px;"
-                                           onclick="this.select()">
-                                </p>
-                            </div>
-                        `;
-                    } else {
-                        // Crea immagine QR code
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = "QR Code per accedere all'album";
-                        img.style.width = '200px';
-                        img.style.height = '200px';
-                        img.style.display = 'block';
-                        img.style.margin = '0 auto';
-                        img.style.borderRadius = '10px';
-                        img.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                        
-                        qrDiv.appendChild(img);
-                        qrCodeDiv.appendChild(qrDiv);
-                    }
-                });
-            } catch (error) {
-                console.error('❌ Errore QR:', error);
-                // Fallback alternativo
-                qrCodeDiv.innerHTML = `
-                    <div style="text-align: center; padding: 25px;">
-                        <p style="color: var(--viola-laurea); font-weight: bold; margin-bottom: 10px;">
-                            Condividi il link dell'album:
-                        </p>
-                        <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid var(--oro-laurea); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                            <input type="text" value="${GITHUB_PAGES_URL}" readonly 
-                                   style="width: 100%; padding: 10px; border: none; text-align: center; font-size: 0.9rem; background: #f8f9fa;"
-                                   onclick="this.select()">
-                        </div>
-                        <p style="color: #666; margin-top: 15px; font-size: 0.9rem;">
-                            Scansiona con la fotocamera del telefono
-                        </p>
-                    </div>
-                `;
-            }
-        }
-
-        function downloadQRCode() {
-            const qrImg = document.querySelector('#qrcode img');
-            if (!qrImg) {
-                showMessage('QR Code non disponibile', 'error');
-                return;
-            }
-            
-            try {
-                // Crea un canvas per scaricare l'immagine
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Crea un'immagine temporanea
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = function() {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    
-                    // Scarica l'immagine
-                    const link = document.createElement('a');
-                    link.download = 'QR-Code-Laurea-Mati.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    
-                    showMessage('✅ QR Code scaricato', 'success');
-                };
-                
-                img.src = qrImg.src;
-                
-            } catch (error) {
-                console.error('❌ Errore download QR:', error);
-                showMessage('Errore nel download del QR Code', 'error');
-            }
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(GITHUB_PAGES_URL).then(() => {
-                showMessage('✅ Link copiato negli appunti!', 'success');
-            }).catch(err => {
-                console.error('Errore copia:', err);
-                // Fallback per browser più vecchi
-                const tempInput = document.createElement('input');
-                tempInput.value = GITHUB_PAGES_URL;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                showMessage('✅ Link copiato!', 'success');
-            });
         }
 
         // ========== ADMIN FUNCTIONS ==========
