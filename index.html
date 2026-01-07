@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#5A189A">
     <title>🎓 Album Fotografico - Laurea Mati</title>
     
     <!-- Firebase SDK -->
@@ -10,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
     <!-- QR Code Generator -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     
     <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -38,8 +41,8 @@
             --oro-chiaro: #FFF9C4;
             --gradiente-laurea: linear-gradient(135deg, #5A189A 0%, #9D4EDD 100%);
             --gradiente-oro: linear-gradient(135deg, #FFD700 0%, #FFEC8B 100%);
-            --ombra-sottile: 0 8px 30px rgba(90, 24, 154, 0.1);
-            --ombra-forte: 0 20px 50px rgba(90, 24, 154, 0.15);
+            --ombra-sottile: 0 4px 15px rgba(90, 24, 154, 0.1);
+            --ombra-forte: 0 10px 30px rgba(90, 24, 154, 0.15);
             --safe-area-top: env(safe-area-inset-top);
             --safe-area-bottom: env(safe-area-inset-bottom);
             --safe-area-left: env(safe-area-inset-left);
@@ -51,11 +54,16 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
         
         html {
             font-size: 16px;
             scroll-behavior: smooth;
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: touch;
         }
         
         body {
@@ -63,12 +71,13 @@
             background: var(--bianco-sporco);
             color: #333;
             min-height: 100vh;
-            line-height: 1.7;
+            line-height: 1.6;
             overflow-x: hidden;
             padding-top: var(--safe-area-top);
             padding-bottom: var(--safe-area-bottom);
-            padding-left: var(--safe-area-left);
-            padding-right: var(--safe-area-right);
+            padding-left: max(12px, var(--safe-area-left));
+            padding-right: max(12px, var(--safe-area-right));
+            position: relative;
         }
         
         /* ===== HEADER LAUREA ===== */
@@ -76,11 +85,15 @@
             background: var(--gradiente-laurea);
             color: white;
             text-align: center;
-            padding: clamp(40px, 8vw, 70px) 20px;
+            padding: 50px 20px 60px;
             position: relative;
             overflow: hidden;
             clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            margin-bottom: -30px;
+            margin-bottom: -20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .laurea-header::before {
@@ -99,51 +112,54 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 30px;
+            height: 20px;
             background: var(--oro-laurea);
             clip-path: polygon(0 100%, 100% 0, 100% 100%);
         }
         
         .laurea-title {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 7vw, 4.2rem);
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
             color: var(--oro-laurea);
-            margin-bottom: 15px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 12px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             position: relative;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             line-height: 1.2;
+            padding: 0 10px;
         }
         
         .laurea-subtitle {
-            font-size: clamp(1rem, 3vw, 1.6rem);
+            font-size: clamp(1rem, 3.5vw, 1.4rem);
             font-weight: 300;
             opacity: 0.95;
             max-width: 800px;
-            margin: 0 auto 30px;
+            margin: 0 auto 20px;
             font-family: 'Dancing Script', cursive;
+            padding: 0 15px;
         }
         
         .header-icons {
             display: flex;
             justify-content: center;
-            gap: clamp(10px, 3vw, 25px);
-            margin-top: 25px;
+            gap: 12px;
+            margin-top: 20px;
             flex-wrap: wrap;
+            padding: 0 10px;
         }
         
         .header-icon {
             background: rgba(255, 255, 255, 0.15);
-            width: clamp(45px, 10vw, 60px);
-            height: clamp(45px, 10vw, 60px);
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            font-size: 1.3rem;
             color: var(--oro-laurea);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(5px);
             transition: all 0.3s ease;
             flex-shrink: 0;
         }
@@ -152,26 +168,26 @@
         .container {
             max-width: 1300px;
             margin: 0 auto;
-            padding: clamp(20px, 5vw, 50px) clamp(15px, 4vw, 30px);
+            padding: 25px 15px;
             width: 100%;
         }
         
         /* ===== CARD ===== */
         .card {
             background: white;
-            border-radius: clamp(15px, 3vw, 25px);
-            padding: clamp(25px, 5vw, 50px);
+            border-radius: 16px;
+            padding: 25px;
             box-shadow: var(--ombra-forte);
-            margin-bottom: clamp(30px, 5vw, 50px);
+            margin-bottom: 25px;
             border: none;
             position: relative;
             overflow: hidden;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 60px rgba(90, 24, 154, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(90, 24, 154, 0.2);
         }
         
         .card::before {
@@ -180,16 +196,16 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
+            height: 5px;
             background: var(--gradiente-oro);
         }
         
         .card::after {
             content: "🎓";
             position: absolute;
-            bottom: -20px;
-            right: -20px;
-            font-size: clamp(60px, 15vw, 120px);
+            bottom: -15px;
+            right: -15px;
+            font-size: 80px;
             opacity: 0.05;
             transform: rotate(15deg);
         }
@@ -197,7 +213,7 @@
         /* ===== USER INFO SECTION ===== */
         .user-section {
             max-width: 700px;
-            margin: clamp(30px, 5vw, 60px) auto;
+            margin: 30px auto;
             text-align: center;
             position: relative;
             z-index: 1;
@@ -205,9 +221,9 @@
         
         .welcome-title {
             color: var(--viola-scuro);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-size: clamp(1.6rem, 5vw, 2.5rem);
             position: relative;
             display: inline-block;
         }
@@ -215,52 +231,54 @@
         .welcome-title::after {
             content: "";
             position: absolute;
-            bottom: -10px;
+            bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
+            width: 80px;
+            height: 3px;
             background: var(--gradiente-oro);
             border-radius: 2px;
         }
         
         .welcome-subtitle {
             color: #666;
-            font-size: clamp(1rem, 3vw, 1.3rem);
-            margin-bottom: clamp(25px, 4vw, 40px);
-            line-height: 1.8;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            padding: 0 10px;
         }
         
         .user-input-container {
             position: relative;
-            margin-bottom: clamp(25px, 4vw, 35px);
+            margin-bottom: 20px;
         }
         
         .user-input {
             width: 100%;
-            padding: clamp(18px, 4vw, 22px) clamp(20px, 4vw, 25px);
+            padding: 16px 20px;
             border: 2px solid var(--grigio-chiaro);
-            border-radius: clamp(12px, 2vw, 15px);
-            font-size: clamp(1rem, 3vw, 1.2rem);
+            border-radius: 12px;
+            font-size: 1rem;
             transition: all 0.3s ease;
             background: white;
             font-family: 'Poppins', sans-serif;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
         .user-input:focus {
             outline: none;
             border-color: var(--viola-chiaro);
-            box-shadow: 0 0 0 4px rgba(157, 78, 221, 0.15);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.15);
         }
         
         .input-icon {
             position: absolute;
-            right: clamp(20px, 4vw, 25px);
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--viola-chiaro);
-            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-size: 1.2rem;
         }
         
         /* ===== BUTTONS ===== */
@@ -268,22 +286,26 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: clamp(8px, 2vw, 12px);
-            padding: clamp(16px, 3vw, 20px) clamp(30px, 5vw, 45px);
-            font-size: clamp(1rem, 3vw, 1.2rem);
+            gap: 8px;
+            padding: 14px 25px;
+            font-size: 1rem;
             font-weight: 600;
             border: none;
-            border-radius: clamp(12px, 2vw, 15px);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             font-family: 'Poppins', sans-serif;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             position: relative;
             overflow: hidden;
-            min-height: 50px;
-            width: auto;
-            flex-shrink: 0;
+            min-height: 48px;
+            width: 100%;
+            max-width: 300px;
+            margin: 5px auto;
+            -webkit-appearance: none;
+            appearance: none;
+            touch-action: manipulation;
         }
         
         .btn::before {
@@ -297,103 +319,114 @@
             transition: left 0.5s ease;
         }
         
-        .btn:hover::before {
+        .btn:hover::before, .btn:active::before {
             left: 100%;
         }
         
         .btn-primary {
             background: var(--gradiente-laurea);
             color: white;
-            box-shadow: 0 10px 30px rgba(90, 24, 154, 0.3);
+            box-shadow: 0 5px 15px rgba(90, 24, 154, 0.3);
         }
         
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(90, 24, 154, 0.4);
+        .btn-primary:hover, .btn-primary:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(90, 24, 154, 0.4);
         }
         
         .btn-secondary {
             background: white;
             color: var(--viola-laurea);
             border: 2px solid var(--viola-laurea);
-            box-shadow: 0 5px 15px rgba(90, 24, 154, 0.1);
+            box-shadow: 0 3px 10px rgba(90, 24, 154, 0.1);
         }
         
-        .btn-secondary:hover {
+        .btn-secondary:hover, .btn-secondary:active {
             background: var(--bianco-sporco);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(90, 24, 154, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(90, 24, 154, 0.2);
         }
         
         .btn-success {
             background: var(--gradiente-oro);
             color: var(--viola-scuro);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
         
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        .btn-success:hover, .btn-success:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
         }
         
         .btn-danger {
             background: linear-gradient(135deg, var(--rosso) 0%, #e35d6a 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(194, 24, 7, 0.3);
+            box-shadow: 0 5px 15px rgba(194, 24, 7, 0.3);
         }
         
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(194, 24, 7, 0.4);
+        .btn-danger:hover, .btn-danger:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(194, 24, 7, 0.4);
         }
         
         .btn-warning {
             background: linear-gradient(135deg, #ffc107 0%, #ffda6a 100%);
             color: var(--viola-scuro);
-            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
         }
         
-        .btn-warning:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
+        .btn-warning:hover, .btn-warning:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
         }
         
         .btn-royal {
             background: linear-gradient(135deg, #3C096C 0%, #7B2CBF 100%);
             color: white;
-            box-shadow: 0 10px 30px rgba(60, 9, 108, 0.3);
+            box-shadow: 0 5px 15px rgba(60, 9, 108, 0.3);
         }
         
-        .btn-royal:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(60, 9, 108, 0.4);
+        .btn-royal:hover, .btn-royal:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(60, 9, 108, 0.4);
         }
         
         .btn-large {
-            padding: clamp(18px, 4vw, 24px) clamp(40px, 6vw, 60px);
-            font-size: clamp(1.1rem, 3.5vw, 1.3rem);
-            border-radius: clamp(15px, 3vw, 20px);
+            padding: 18px 35px;
+            font-size: 1.1rem;
+            border-radius: 14px;
+            max-width: 350px;
         }
         
         .btn-small {
-            padding: clamp(10px, 2vw, 12px) clamp(18px, 3vw, 24px);
-            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
-            border-radius: clamp(10px, 2vw, 12px);
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            min-height: 40px;
+            width: auto;
         }
         
         .btn-icon {
-            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-size: 1.1rem;
+        }
+        
+        .btn-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            width: 100%;
         }
         
         /* ===== UPLOAD AREA ===== */
         .upload-area {
-            border: 3px dashed var(--viola-chiaro);
-            border-radius: clamp(15px, 3vw, 25px);
-            padding: clamp(30px, 6vw, 80px) clamp(20px, 4vw, 40px);
+            border: 2px dashed var(--viola-chiaro);
+            border-radius: 16px;
+            padding: 40px 20px;
             text-align: center;
-            margin: clamp(25px, 4vw, 40px) 0;
+            margin: 25px 0;
             background: linear-gradient(135deg, rgba(248, 245, 255, 0.8) 0%, rgba(240, 230, 255, 0.8) 100%);
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -415,44 +448,45 @@
             100% { transform: rotate(360deg); }
         }
         
-        .upload-area:hover, .upload-area.dragover {
+        .upload-area:hover, .upload-area.dragover, .upload-area:active {
             border-color: var(--viola-laurea);
             background: linear-gradient(135deg, rgba(248, 245, 255, 1) 0%, rgba(240, 230, 255, 1) 100%);
-            transform: translateY(-8px);
+            transform: translateY(-5px);
             box-shadow: var(--ombra-forte);
         }
         
         .upload-icon {
-            font-size: clamp(3rem, 10vw, 6rem);
+            font-size: 3.5rem;
             color: var(--viola-chiaro);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
             z-index: 1;
         }
         
         .upload-title {
             color: var(--viola-scuro);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
             position: relative;
             z-index: 1;
         }
         
         .upload-subtitle {
             color: #666;
-            margin: clamp(15px, 3vw, 25px) 0 clamp(25px, 4vw, 40px);
-            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-            line-height: 1.8;
+            margin: 15px 0 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
             position: relative;
             z-index: 1;
+            padding: 0 10px;
         }
         
         .upload-features {
             display: flex;
             justify-content: center;
-            gap: clamp(15px, 3vw, 30px);
-            margin-top: clamp(25px, 4vw, 40px);
+            gap: 15px;
+            margin-top: 25px;
             position: relative;
             z-index: 1;
             flex-wrap: wrap;
@@ -461,53 +495,54 @@
         .feature {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: var(--viola-laurea);
-            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+            font-size: 0.85rem;
         }
         
         .feature i {
             color: var(--oro-laurea);
-            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-size: 1rem;
         }
         
         /* ===== GALLERY ===== */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-            gap: clamp(15px, 3vw, 30px);
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
         }
         
         .photo-card {
             background: white;
-            border-radius: clamp(12px, 3vw, 20px);
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--ombra-sottile);
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
             border: 1px solid var(--grigio-chiaro);
             position: relative;
+            aspect-ratio: 1/1;
         }
         
-        .photo-card:hover {
-            transform: translateY(-10px) scale(1.02);
+        .photo-card:hover, .photo-card:active {
+            transform: translateY(-5px) scale(1.02);
             box-shadow: var(--ombra-forte);
         }
         
-        .photo-card:hover .photo-overlay {
+        .photo-card:hover .photo-overlay, .photo-card:active .photo-overlay {
             opacity: 1;
         }
         
         .photo-image {
             width: 100%;
-            height: clamp(180px, 40vw, 250px);
+            height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.5s ease;
+            transition: transform 0.4s ease;
         }
         
-        .photo-card:hover .photo-image {
-            transform: scale(1.1);
+        .photo-card:hover .photo-image, .photo-card:active .photo-image {
+            transform: scale(1.08);
         }
         
         .photo-overlay {
@@ -516,52 +551,56 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to top, rgba(90, 24, 154, 0.8), transparent);
+            background: linear-gradient(to top, rgba(90, 24, 154, 0.7), transparent 50%);
             opacity: 0;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
             display: flex;
             align-items: flex-end;
-            padding: 15px;
+            padding: 10px;
+            pointer-events: none;
         }
         
         .photo-info {
-            padding: clamp(15px, 3vw, 25px);
+            padding: 12px;
             background: white;
         }
         
         .photo-author {
             font-weight: 600;
             color: var(--viola-scuro);
-            margin-bottom: 6px;
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            margin-bottom: 4px;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .photo-date {
             color: #888;
-            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            font-size: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
         
         /* ===== MESSAGES ===== */
         .message {
-            padding: clamp(18px, 4vw, 25px);
-            border-radius: clamp(12px, 2vw, 15px);
-            margin: clamp(18px, 4vw, 25px) 0;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
             display: none;
             align-items: center;
-            gap: clamp(15px, 3vw, 20px);
+            gap: 12px;
             animation: slideIn 0.3s ease;
             position: relative;
             overflow: hidden;
         }
         
         @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
+            from { transform: translateY(-10px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
@@ -571,13 +610,13 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 5px;
+            width: 4px;
         }
         
         .message-success {
             background: #E8F7EF;
             color: #2D8659;
-            border: 2px solid #A3D9B1;
+            border: 1px solid #A3D9B1;
         }
         
         .message-success::before {
@@ -587,7 +626,7 @@
         .message-error {
             background: #FDE8E8;
             color: #C33;
-            border: 2px solid #F5C6CB;
+            border: 1px solid #F5C6CB;
         }
         
         .message-error::before {
@@ -595,26 +634,26 @@
         }
         
         .message-icon {
-            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-size: 1.5rem;
         }
         
         /* ===== LOADING ===== */
         .loading {
             display: none;
             text-align: center;
-            padding: clamp(40px, 8vw, 60px);
+            padding: 40px 20px;
         }
         
         .loading-spinner {
-            border: 6px solid #F3F3F3;
-            border-top: 6px solid var(--viola-laurea);
-            border-right: 6px solid var(--viola-chiaro);
-            border-bottom: 6px solid var(--oro-laurea);
+            border: 4px solid #F3F3F3;
+            border-top: 4px solid var(--viola-laurea);
+            border-right: 4px solid var(--viola-chiaro);
+            border-bottom: 4px solid var(--oro-laurea);
             border-radius: 50%;
-            width: clamp(50px, 15vw, 80px);
-            height: clamp(50px, 15vw, 80px);
+            width: 60px;
+            height: 60px;
             animation: spin 1.5s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
         }
         
         @keyframes spin {
@@ -625,128 +664,139 @@
         /* ===== USER INFO BAR ===== */
         .user-info-bar {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: clamp(25px, 4vw, 40px);
-            padding: clamp(20px, 4vw, 30px);
+            margin-bottom: 25px;
+            padding: 20px;
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(157, 78, 221, 0.1) 100%);
-            border-radius: clamp(15px, 3vw, 20px);
+            border-radius: 16px;
             border: 2px solid rgba(157, 78, 221, 0.2);
-            backdrop-filter: blur(10px);
-            flex-wrap: wrap;
+            backdrop-filter: blur(5px);
             gap: 15px;
+            text-align: center;
+        }
+        
+        .user-avatar-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
         }
         
         .user-avatar {
-            width: clamp(60px, 12vw, 80px);
-            height: clamp(60px, 12vw, 80px);
+            width: 60px;
+            height: 60px;
             background: var(--gradiente-laurea);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-size: 1.4rem;
             font-weight: bold;
-            box-shadow: 0 10px 30px rgba(90, 24, 154, 0.3);
-            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(90, 24, 154, 0.3);
+            border: 3px solid white;
             flex-shrink: 0;
         }
         
         .user-details {
             flex-grow: 1;
-            margin-left: clamp(15px, 3vw, 25px);
-            min-width: 200px;
+            min-width: 0;
         }
         
         .user-name {
             color: var(--viola-scuro);
             margin-bottom: 5px;
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            font-size: 1.4rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .user-status {
             color: #666;
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            font-size: 0.95rem;
         }
         
         /* ===== SECTION TITLES ===== */
         .section-title {
             text-align: center;
-            margin-bottom: clamp(30px, 5vw, 50px);
+            margin-bottom: 25px;
             position: relative;
         }
         
         .section-title h2 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
             color: var(--viola-scuro);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: inline-block;
         }
         
         .section-title h2::after {
             content: "";
             position: absolute;
-            bottom: -15px;
+            bottom: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
+            width: 60px;
+            height: 3px;
             background: var(--gradiente-oro);
             border-radius: 2px;
         }
         
         .section-subtitle {
             color: #666;
-            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-size: 0.95rem;
             max-width: 700px;
             margin: 0 auto;
+            padding: 0 15px;
         }
         
         /* ===== TORNA AL MENU PRINCIPALE ===== */
         .back-to-menu-section {
-            margin-top: clamp(40px, 6vw, 60px);
-            padding-top: clamp(25px, 4vw, 40px);
-            border-top: 3px solid var(--grigio-chiaro);
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid var(--grigio-chiaro);
             text-align: center;
         }
         
         .back-to-menu-container {
             background: linear-gradient(135deg, rgba(248, 245, 255, 0.8) 0%, rgba(240, 230, 255, 0.8) 100%);
-            border-radius: clamp(15px, 3vw, 20px);
-            padding: clamp(20px, 4vw, 30px);
-            border: 2px solid var(--viola-chiaro);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--viola-chiaro);
             max-width: 500px;
             margin: 0 auto;
         }
         
         .back-to-menu-text {
             color: var(--viola-scuro);
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
-            margin-bottom: clamp(20px, 4vw, 25px);
-            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
         
         /* ===== ADMIN PANEL ===== */
         .admin-panel {
             background: linear-gradient(135deg, rgba(255, 248, 225, 0.9) 0%, rgba(255, 243, 224, 0.9) 100%);
-            border: 3px solid var(--oro-laurea);
-            backdrop-filter: blur(10px);
+            border: 2px solid var(--oro-laurea);
+            backdrop-filter: blur(5px);
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
-            gap: clamp(15px, 3vw, 25px);
-            margin: clamp(25px, 4vw, 40px) 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
         }
         
         .stat-card {
             background: white;
-            padding: clamp(20px, 4vw, 30px);
-            border-radius: clamp(15px, 3vw, 20px);
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
             border: 2px solid var(--oro-laurea);
             box-shadow: var(--ombra-sottile);
@@ -754,99 +804,101 @@
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             box-shadow: var(--ombra-forte);
         }
         
         .stat-number {
-            font-size: clamp(2rem, 6vw, 3rem);
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--viola-laurea);
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-family: 'Playfair Display', serif;
         }
         
         .stat-label {
             color: #666;
-            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
         /* ===== ADMIN TOOLS ===== */
         .admin-tools {
             display: flex;
-            gap: clamp(10px, 2vw, 20px);
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: clamp(25px, 4vw, 40px) 0;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
         }
         
         .admin-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
-            gap: clamp(15px, 3vw, 25px);
-            margin: clamp(25px, 4vw, 40px) 0;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
         }
         
         .admin-photo-card {
             background: white;
-            border-radius: clamp(12px, 3vw, 20px);
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--ombra-sottile);
-            border: 3px solid transparent;
+            border: 2px solid transparent;
             transition: all 0.3s ease;
             position: relative;
+            aspect-ratio: 1/1;
         }
         
         .admin-photo-card.selected {
             border-color: var(--rosso);
-            box-shadow: 0 0 0 4px rgba(194, 24, 7, 0.1);
-            transform: translateY(-5px);
+            box-shadow: 0 0 0 3px rgba(194, 24, 7, 0.1);
+            transform: translateY(-3px);
         }
         
         .admin-photo-card img {
             width: 100%;
-            height: clamp(120px, 25vw, 160px);
+            height: 100%;
             object-fit: cover;
+            display: block;
         }
         
         .admin-photo-info {
-            padding: clamp(15px, 3vw, 20px);
+            padding: 10px;
         }
         
         .photo-checkbox {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 24px;
-            height: 24px;
+            top: 10px;
+            left: 10px;
+            width: 22px;
+            height: 22px;
             z-index: 2;
             cursor: pointer;
             accent-color: var(--viola-laurea);
+            transform: scale(1.2);
         }
         
         .photo-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 10px;
         }
         
         /* ===== SELECTION BAR ===== */
         .selection-bar {
             position: fixed;
-            bottom: max(20px, var(--safe-area-bottom));
+            bottom: max(15px, var(--safe-area-bottom));
             left: 50%;
             transform: translateX(-50%);
             background: white;
-            padding: clamp(15px, 3vw, 20px) clamp(25px, 5vw, 40px);
-            border-radius: 60px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
             display: none;
             align-items: center;
-            gap: clamp(10px, 3vw, 25px);
+            gap: 12px;
             z-index: 1001;
-            border: 3px solid var(--oro-laurea);
+            border: 2px solid var(--oro-laurea);
             animation: slideUp 0.3s ease;
             flex-wrap: wrap;
             justify-content: center;
@@ -856,26 +908,26 @@
         
         @keyframes slideUp {
             from { bottom: -100px; opacity: 0; }
-            to { bottom: max(20px, var(--safe-area-bottom)); opacity: 1; }
+            to { bottom: max(15px, var(--safe-area-bottom)); opacity: 1; }
         }
         
         .selection-count {
             font-weight: 600;
             color: var(--viola-scuro);
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         /* ===== QR CODE SECTION ===== */
         .qr-section {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: clamp(15px, 3vw, 20px);
-            padding: clamp(25px, 5vw, 40px);
+            border-radius: 16px;
+            padding: 25px 20px;
             text-align: center;
-            margin-top: clamp(25px, 5vw, 40px);
-            border: 3px dashed var(--viola-chiaro);
+            margin-top: 25px;
+            border: 2px dashed var(--viola-chiaro);
             position: relative;
             overflow: hidden;
         }
@@ -893,66 +945,84 @@
         }
         
         #qrcode {
-            margin: 20px auto;
-            padding: 20px;
+            margin: 15px auto;
+            padding: 15px;
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             display: inline-block;
             box-shadow: var(--ombra-sottile);
             position: relative;
             z-index: 1;
-            min-height: 220px;
-            min-width: 220px;
+            min-height: 180px;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #qrcode img {
+            width: 180px;
+            height: 180px;
+            border-radius: 8px;
+        }
+        
+        .qr-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
         }
         
         /* ===== FOOTER ===== */
         .footer {
             text-align: center;
-            padding: clamp(40px, 6vw, 60px) 20px;
+            padding: 40px 20px;
             color: #666;
-            margin-top: clamp(50px, 8vw, 80px);
+            margin-top: 40px;
             background: linear-gradient(135deg, rgba(90, 24, 154, 0.05) 0%, rgba(157, 78, 221, 0.05) 100%);
-            border-top: 3px solid var(--oro-laurea);
-            clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+            border-top: 2px solid var(--oro-laurea);
+            clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
         }
         
         .footer-title {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
             color: var(--viola-scuro);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .footer-subtitle {
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            font-size: 0.95rem;
             max-width: 600px;
-            margin: 0 auto 25px;
+            margin: 0 auto 20px;
+            padding: 0 15px;
         }
         
         .footer-icons {
             display: flex;
             justify-content: center;
-            gap: clamp(10px, 3vw, 20px);
-            margin-top: 25px;
+            gap: 15px;
+            margin-top: 20px;
             flex-wrap: wrap;
         }
         
         .footer-icon {
-            width: clamp(40px, 10vw, 50px);
-            height: clamp(40px, 10vw, 50px);
+            width: 45px;
+            height: 45px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--viola-laurea);
-            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            font-size: 1.2rem;
             box-shadow: var(--ombra-sottile);
             transition: all 0.3s ease;
         }
         
-        .footer-icon:hover {
-            transform: translateY(-5px);
+        .footer-icon:hover, .footer-icon:active {
+            transform: translateY(-3px);
             background: var(--gradiente-laurea);
             color: white;
             box-shadow: var(--ombra-forte);
@@ -966,24 +1036,26 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             z-index: 2000;
             align-items: center;
             justify-content: center;
             padding: 20px;
             animation: fadeIn 0.3s ease;
+            overflow-y: auto;
         }
         
         .modal-admin-content {
             background: white;
-            border-radius: 25px;
-            padding: 50px;
-            max-width: 500px;
-            width: 90%;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 450px;
+            width: 100%;
             position: relative;
             animation: scaleIn 0.3s ease;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-            border: 3px solid var(--oro-laurea);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 2px solid var(--oro-laurea);
+            margin: auto;
         }
         
         .modal-admin-content::before {
@@ -992,25 +1064,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
+            height: 5px;
             background: var(--gradiente-oro);
         }
         
         .modal-admin-title {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: var(--viola-scuro);
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
         }
         
         .modal-admin-icon {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .modal-admin-icon i {
-            font-size: 4rem;
+            font-size: 3.5rem;
             color: var(--viola-chiaro);
             background: var(--gradiente-laurea);
             -webkit-background-clip: text;
@@ -1020,26 +1092,28 @@
         
         .modal-admin-input {
             width: 100%;
-            padding: 20px;
+            padding: 16px;
             border: 2px solid var(--grigio-chiaro);
-            border-radius: 15px;
-            font-size: 1.2rem;
-            margin-bottom: 25px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
             font-family: 'Poppins', sans-serif;
             text-align: center;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
         .modal-admin-input:focus {
             outline: none;
             border-color: var(--viola-chiaro);
-            box-shadow: 0 0 0 4px rgba(157, 78, 221, 0.15);
+            box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.15);
         }
         
         .modal-admin-buttons {
             display: flex;
-            gap: 15px;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
         }
         
         /* ===== MODAL PER VISUALIZZAZIONE FOTO ===== */
@@ -1054,10 +1128,11 @@
             z-index: 2001;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            padding-top: max(20px, var(--safe-area-top));
-            padding-bottom: max(20px, var(--safe-area-bottom));
+            padding: 15px;
+            padding-top: max(15px, var(--safe-area-top));
+            padding-bottom: max(15px, var(--safe-area-bottom));
             animation: fadeIn 0.3s ease;
+            overflow: hidden;
         }
         
         @keyframes fadeIn {
@@ -1067,9 +1142,12 @@
         
         .modal-photo-content {
             max-width: 95%;
-            max-height: 95%;
+            max-height: 90vh;
             position: relative;
             animation: scaleIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         @keyframes scaleIn {
@@ -1080,266 +1158,44 @@
         .modal-photo-img {
             max-width: 100%;
             max-height: 85vh;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            object-fit: contain;
         }
         
         .modal-close {
             position: absolute;
-            top: -60px;
-            right: -20px;
+            top: -50px;
+            right: 0;
             background: var(--gradiente-laurea);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.8rem;
+            width: 45px;
+            height: 45px;
+            font-size: 1.4rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
+            z-index: 2002;
         }
         
-        .modal-close:hover {
+        .modal-close:hover, .modal-close:active {
             transform: rotate(90deg) scale(1.1);
             background: var(--gradiente-oro);
             color: var(--viola-scuro);
         }
         
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1200px) {
-            .container { max-width: 100%; }
-        }
-        
-        @media (max-width: 768px) {
-            .user-info-bar {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-            
-            .user-details {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .admin-tools {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .selection-bar {
-                flex-direction: column;
-                border-radius: 20px;
-                width: 90%;
-                padding: 20px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .modal-admin-content {
-                padding: 30px;
-                width: 95%;
-            }
-            
-            .modal-admin-title {
-                font-size: 1.8rem;
-            }
-            
-            .modal-close {
-                top: -50px;
-                right: 10px;
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-            
-            .laurea-header {
-                padding-left: 15px;
-                padding-right: 15px;
-            }
-            
-            .upload-area {
-                padding: 30px 15px;
-            }
-            
-            .upload-features {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .gallery {
-                grid-template-columns: 1fr;
-            }
-            
-            .admin-gallery {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .btn-large {
-                padding: 18px 30px;
-            }
-            
-            .modal-admin-content {
-                padding: 25px;
-            }
-            
-            .modal-admin-title {
-                font-size: 1.6rem;
-            }
-            
-            .modal-admin-input {
-                padding: 15px;
-                font-size: 1.1rem;
-            }
-            
-            .modal-close {
-                top: -40px;
-                right: 0;
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            html {
-                font-size: 14px;
-            }
-            
-            .laurea-title {
-                font-size: 1.8rem;
-            }
-            
-            .welcome-title {
-                font-size: 1.6rem;
-            }
-            
-            .section-title h2 {
-                font-size: 1.6rem;
-            }
-            
-            .user-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 1.3rem;
-            }
-            
-            .photo-image {
-                height: 160px;
-            }
-            
-            .modal-photo-content {
-                max-width: 100%;
-                max-height: 100%;
-            }
-        }
-        
-        @media (max-height: 500px) and (orientation: landscape) {
-            .laurea-header {
-                padding: 20px;
-                margin-bottom: -20px;
-            }
-            
-            .laurea-title {
-                font-size: 2rem;
-                margin-bottom: 10px;
-            }
-            
-            .container {
-                padding-top: 20px;
-            }
-            
-            .card {
-                margin-bottom: 20px;
-                padding: 20px;
-            }
-            
-            .user-info-bar {
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-            
-            .photo-image {
-                height: 120px;
-            }
-            
-            .modal-photo-content {
-                max-height: 90vh;
-            }
-            
-            .modal-admin-content {
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-        }
-        
-        /* Supporto Safe Area per dispositivi con notch */
-        @supports(padding: max(0px)) {
-            body {
-                padding-left: max(15px, var(--safe-area-left));
-                padding-right: max(15px, var(--safe-area-right));
-            }
-        }
-        
-        /* Ottimizzazioni per iOS Safari */
-        @supports (-webkit-touch-callout: none) {
-            .btn {
-                -webkit-appearance: none;
-            }
-            
-            input, textarea, select {
-                font-size: 16px !important;
-            }
-            
-            .upload-area {
-                cursor: pointer;
-            }
-        }
-        
-        /* Animazioni */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        /* Progress Bar */
+        /* ===== PROGRESS BAR ===== */
         .progress-container {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: var(--grigio-chiaro);
             border-radius: 3px;
-            margin-top: 20px;
+            margin-top: 15px;
             overflow: hidden;
             display: none;
         }
@@ -1352,7 +1208,253 @@
             transition: width 0.3s ease;
         }
         
-        /* Gestione touch per mobile */
+        /* ===== ANIMAZIONI ===== */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* ===== MEDIA QUERIES PER DESKTOP ===== */
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px 30px;
+            }
+            
+            .laurea-header {
+                padding: 60px 30px 80px;
+                min-height: 250px;
+            }
+            
+            .laurea-title {
+                font-size: 3.5rem;
+            }
+            
+            .header-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 35px;
+                border-radius: 20px;
+                margin-bottom: 35px;
+            }
+            
+            .user-info-bar {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+                padding: 25px 30px;
+            }
+            
+            .user-avatar-container {
+                width: auto;
+                justify-content: flex-start;
+            }
+            
+            .user-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 1.6rem;
+            }
+            
+            .user-details {
+                margin-left: 20px;
+            }
+            
+            .btn {
+                width: auto;
+                padding: 16px 35px;
+            }
+            
+            .btn-row {
+                flex-direction: row;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .btn-large {
+                max-width: none;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+            
+            .admin-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            
+            .stat-card {
+                padding: 25px 20px;
+            }
+            
+            .admin-tools {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .upload-area {
+                padding: 60px 40px;
+            }
+            
+            .upload-title {
+                font-size: 2rem;
+            }
+            
+            .upload-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .modal-admin-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .modal-admin-content {
+                padding: 40px;
+            }
+            
+            .qr-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .selection-bar {
+                padding: 15px 30px;
+                gap: 20px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .container {
+                padding: 50px 40px;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+            
+            .admin-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .card {
+                padding: 40px;
+            }
+            
+            .laurea-header {
+                padding: 70px 40px 90px;
+            }
+        }
+        
+        /* ===== MEDIA QUERIES PER MOBILE PICCOLO ===== */
+        @media (max-width: 360px) {
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            .laurea-title {
+                font-size: 1.6rem;
+            }
+            
+            .laurea-subtitle {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 20px;
+                border-radius: 14px;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+            
+            .admin-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+            
+            .user-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .user-name {
+                font-size: 1.2rem;
+            }
+            
+            .btn-large {
+                padding: 16px 25px;
+                font-size: 1rem;
+            }
+            
+            #qrcode {
+                min-width: 160px;
+                min-height: 160px;
+            }
+            
+            #qrcode img {
+                width: 160px;
+                height: 160px;
+            }
+        }
+        
+        /* ===== MEDIA QUERIES PER LANDSCAPE ===== */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .laurea-header {
+                padding: 25px 20px 35px;
+                min-height: auto;
+                clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            }
+            
+            .laurea-title {
+                font-size: 2rem;
+                margin-bottom: 8px;
+            }
+            
+            .container {
+                padding-top: 15px;
+            }
+            
+            .card {
+                margin-bottom: 15px;
+                padding: 20px;
+            }
+            
+            .user-info-bar {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .modal-photo-content {
+                max-height: 85vh;
+            }
+        }
+        
+        /* ===== GESTIONE TOUCH PER MOBILE ===== */
         @media (hover: none) and (pointer: coarse) {
             .btn:active {
                 transform: scale(0.98);
@@ -1365,6 +1467,108 @@
             .photo-card:active {
                 transform: scale(0.98);
             }
+            
+            .upload-area:active {
+                transform: translateY(-5px);
+            }
+            
+            /* Previeni zoom su input iOS */
+            input, textarea, select {
+                font-size: 16px !important;
+            }
+            
+            /* Migliora scroll per iOS */
+            * {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
+        /* ===== OTTIMIZZAZIONI IOS SAFARI ===== */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                padding-bottom: calc(var(--safe-area-bottom) + 10px);
+            }
+            
+            .selection-bar {
+                bottom: calc(var(--safe-area-bottom) + 10px);
+            }
+            
+            input, textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* ===== PREVISIONE CLICK FANTASMA SU MOBILE ===== */
+        .touch-fix {
+            touch-action: manipulation;
+        }
+        
+        /* ===== SCROLLBAR PERSONALIZZATA ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--grigio-chiaro);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--viola-chiaro);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--viola-laurea);
+        }
+        
+        /* ===== UTILITY CLASSES ===== */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-1 { margin-bottom: 10px; }
+        .mb-2 { margin-bottom: 20px; }
+        .mb-3 { margin-bottom: 30px; }
+        
+        .mt-1 { margin-top: 10px; }
+        .mt-2 { margin-top: 20px; }
+        .mt-3 { margin-top: 30px; }
+        
+        .d-none { display: none !important; }
+        .d-block { display: block !important; }
+        .d-flex { display: flex !important; }
+        
+        .w-100 { width: 100%; }
+        
+        /* ===== LOADING FIX PER GALLERY ===== */
+        #galleryLoading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ===== TOOLTIP PER MOBILE ===== */
+        [data-tooltip] {
+            position: relative;
+        }
+        
+        [data-tooltip]:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -1413,7 +1617,7 @@
                 </div>
             </div>
             
-            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <div class="btn-row">
                 <button id="continueBtn" class="btn btn-primary btn-large">
                     <i class="fas fa-arrow-right btn-icon"></i> Vai all'Album Fotografico
                 </button>
@@ -1423,10 +1627,10 @@
                 </button>
             </div>
             
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--grigio-chiaro);">
-                <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
-                    <i class="fas fa-info-circle" style="color: var(--viola-chiaro); font-size: 1.1rem;"></i>
-                    <p style="color: #666; font-size: 0.95rem;">
+            <div class="mt-3 pt-3" style="border-top: 2px solid var(--grigio-chiaro);">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-info-circle" style="color: var(--viola-chiaro); font-size: 1rem;"></i>
+                    <p style="color: #666; font-size: 0.9rem; text-align: center;">
                         Il tuo nome apparirà accanto alle foto che carichi. Le foto rimarranno disponibili per sempre!
                     </p>
                 </div>
@@ -1434,10 +1638,10 @@
         </div>
 
         <!-- APP PRINCIPALE -->
-        <div id="appSection" style="display: none;">
+        <div id="appSection" class="d-none">
             <!-- INFORMAZIONI UTENTE -->
             <div class="user-info-bar">
-                <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="user-avatar-container">
                     <div class="user-avatar" id="userAvatar">
                         GU
                     </div>
@@ -1474,7 +1678,7 @@
                         <i class="fas fa-folder-open btn-icon"></i> Scegli dal tuo dispositivo
                     </button>
                     
-                    <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                    <input type="file" id="fileInput" accept="image/*" multiple class="d-none">
                     
                     <div class="upload-features">
                         <div class="feature">
@@ -1500,9 +1704,9 @@
                 <!-- LOADING -->
                 <div class="loading" id="loadingIndicator">
                     <div class="loading-spinner"></div>
-                    <p style="color: var(--viola-laurea); margin-top: 15px; font-size: 1.1rem;">
+                    <p style="color: var(--viola-laurea); margin-top: 15px; font-size: 1rem;">
                         Caricamento in corso...<br>
-                        <span style="font-size: 0.95rem; color: #666;" id="uploadProgressText"></span>
+                        <span style="font-size: 0.9rem; color: #666;" id="uploadProgressText"></span>
                     </p>
                 </div>
                 
@@ -1530,7 +1734,7 @@
                 
                 <div class="loading" id="galleryLoading">
                     <div class="loading-spinner"></div>
-                    <p style="color: var(--viola-laurea); margin-top: 15px; font-size: 1.1rem;">
+                    <p style="color: var(--viola-laurea); margin-top: 15px; font-size: 1rem;">
                         Caricamento galleria...
                     </p>
                 </div>
@@ -1539,12 +1743,12 @@
                     <!-- Le foto verranno caricate qui dinamicamente -->
                 </div>
                 
-                <div id="emptyGallery" style="text-align: center; padding: 50px; color: #888; display: none;">
-                    <i class="fas fa-images" style="font-size: 3.5rem; margin-bottom: 20px; color: var(--grigio-chiaro);"></i>
-                    <h3 style="color: var(--viola-laurea); margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.8rem;">
+                <div id="emptyGallery" class="text-center p-4 d-none">
+                    <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 15px; color: var(--grigio-chiaro);"></i>
+                    <h3 style="color: var(--viola-laurea); margin-bottom: 12px; font-family: 'Playfair Display', serif; font-size: 1.5rem;">
                         Ancora nessuna foto
                     </h3>
-                    <p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto;">
+                    <p style="font-size: 1rem; max-width: 500px; margin: 0 auto;">
                         Sii il primo a caricare i ricordi di questa serata speciale!
                     </p>
                 </div>
@@ -1557,7 +1761,7 @@
                         Hai finito di caricare le tue foto?<br>
                         Puoi tornare alla schermata principale per cambiare nome o uscire.
                     </p>
-                    <button id="backToMenuBtn" class="btn btn-warning">
+                    <button id="backToMenuBtn" class="btn btn-warning w-100" style="max-width: 250px;">
                         <i class="fas fa-home btn-icon"></i> Torna al Menu Principale
                     </button>
                 </div>
@@ -1565,7 +1769,7 @@
         </div>
 
         <!-- PANNELLO ADMIN -->
-        <div id="adminSection" class="card admin-panel" style="display: none;">
+        <div id="adminSection" class="card admin-panel d-none">
             <div class="section-title">
                 <h2><i class="fas fa-crown"></i> Pannello di Controllo</h2>
                 <p class="section-subtitle">
@@ -1594,8 +1798,8 @@
             </div>
             
             <!-- STRUMENTI ADMIN -->
-            <div style="text-align: center; margin: 40px 0;">
-                <h3 style="color: var(--viola-scuro); margin-bottom: 25px; font-family: 'Playfair Display', serif; font-size: 1.8rem;">
+            <div class="text-center mb-3">
+                <h3 style="color: var(--viola-scuro); margin-bottom: 20px; font-family: 'Playfair Display', serif; font-size: 1.5rem;">
                     <i class="fas fa-tools"></i> Strumenti di Gestione
                 </h3>
                 
@@ -1617,7 +1821,7 @@
                     </button>
                 </div>
                 
-                <p style="color: #666; margin-top: 20px; font-size: 0.95rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p style="color: #666; margin-top: 15px; font-size: 0.9rem; max-width: 600px; margin-left: auto; margin-right: auto;">
                     <i class="fas fa-info-circle" style="color: var(--oro-laurea);"></i>
                     Seleziona le foto con le checkbox, poi elimina o scarica in blocco. Per scaricare tutto l'album, clicca su "Scarica Tutto".
                 </p>
@@ -1628,38 +1832,38 @@
                 <!-- Foto per admin con checkbox -->
             </div>
             
-            <div id="adminEmptyGallery" style="text-align: center; padding: 50px; color: #888; display: none;">
-                <i class="fas fa-images" style="font-size: 3.5rem; margin-bottom: 20px; color: var(--grigio-chiaro);"></i>
-                <h3 style="color: var(--viola-laurea); margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.8rem;">
+            <div id="adminEmptyGallery" class="text-center p-4 d-none">
+                <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 15px; color: var(--grigio-chiaro);"></i>
+                <h3 style="color: var(--viola-laurea); margin-bottom: 12px; font-family: 'Playfair Display', serif; font-size: 1.5rem;">
                     Nessuna foto da gestire
                 </h3>
-                <p style="font-size: 1.1rem;">
+                <p style="font-size: 1rem;">
                     Le foto caricate dagli ospiti appariranno qui
                 </p>
             </div>
             
             <!-- QR CODE FISSO PER GITHUB PAGES -->
             <div class="qr-section">
-                <h3 style="color: var(--viola-scuro); margin-bottom: 20px; font-family: 'Playfair Display', serif; font-size: 1.8rem;">
+                <h3 style="color: var(--viola-scuro); margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.5rem;">
                     <i class="fas fa-qrcode"></i> QR Code per gli Ospiti
                 </h3>
                 <div id="qrcode"></div>
-                <p style="color: #666; margin-top: 15px; font-size: 1rem;">
+                <p style="color: #666; margin-top: 10px; font-size: 0.9rem;">
                     Scansiona questo QR code con la fotocamera del telefono per accedere direttamente alla pagina dell'album
                 </p>
-                <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <button id="downloadQRBtn" class="btn btn-warning">
+                <div class="qr-buttons">
+                    <button id="downloadQRBtn" class="btn btn-warning" style="width: 200px;">
                         <i class="fas fa-download btn-icon"></i> Scarica QR Code
                     </button>
-                    <button id="copyLinkBtn" class="btn btn-secondary">
+                    <button id="copyLinkBtn" class="btn btn-secondary" style="width: 200px;">
                         <i class="fas fa-copy btn-icon"></i> Copia Link
                     </button>
                 </div>
             </div>
             
             <!-- PULSANTE CHIUDI ADMIN -->
-            <div style="text-align: center; margin-top: 40px;">
-                <button id="closeAdminBtn" class="btn btn-secondary">
+            <div class="text-center mt-3">
+                <button id="closeAdminBtn" class="btn btn-secondary" style="width: 250px;">
                     <i class="fas fa-times btn-icon"></i> Chiudi Pannello Admin
                 </button>
             </div>
@@ -1687,7 +1891,7 @@
     <div class="footer">
         <h2 class="footer-title">Grazie per aver reso indimenticabile questa serata!</h2>
         <p class="footer-subtitle">
-            Questo album fotografico rimarrà disponibile per sempre come ricordo della laurea
+            Questo album fotografico rimarrà disponibile per sempre come ricordo della laurea.
             Tutti i momenti più belli della festa conservati in un unico posto speciale.
         </p>
         
@@ -1706,7 +1910,7 @@
             </div>
         </div>
         
-        <p style="margin-top: 30px; color: #888; font-size: 0.85rem;">
+        <p style="margin-top: 25px; color: #888; font-size: 0.8rem;">
             © 2026 – Album Fotografico Laurea Mati – Disegnato e realizzato da Angelo
         </p>
     </div>
@@ -1718,14 +1922,16 @@
                 <i class="fas fa-crown"></i>
             </div>
             <h2 class="modal-admin-title">Accesso Admin</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 25px; font-size: 1.1rem;">
+            <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 1rem;">
                 Inserisci il codice admin per accedere al pannello di controllo
             </p>
             <input type="password" 
                    id="adminCodeInput" 
                    class="modal-admin-input" 
                    placeholder="Codice Admin"
-                   maxlength="10">
+                   maxlength="10"
+                   autocapitalize="none"
+                   autocomplete="off">
             <div class="modal-admin-buttons">
                 <button id="modalAdminConfirm" class="btn btn-royal">
                     <i class="fas fa-check btn-icon"></i> Conferma
@@ -1796,6 +2002,22 @@
             detectOrientation();
             window.addEventListener('resize', detectOrientation);
             window.addEventListener('orientationchange', detectOrientation);
+            
+            // Previeni comportamento default su mobile
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+                e.preventDefault();
+            }, { passive: false });
+            
+            // Previeni zoom su input
+            document.addEventListener('touchmove', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+                e.preventDefault();
+            }, { passive: false });
         });
 
         // ========== RILEVA ORIENTAMENTO ==========
@@ -1803,6 +2025,12 @@
             const isPortrait = window.innerHeight > window.innerWidth;
             document.body.classList.toggle('portrait', isPortrait);
             document.body.classList.toggle('landscape', !isPortrait);
+            
+            // Ottimizza per landscape su mobile
+            if (!isPortrait && window.innerWidth <= 900) {
+                document.body.style.paddingTop = '10px';
+                document.body.style.paddingBottom = '10px';
+            }
         }
 
         // ========== INIZIALIZZA ELEMENTI DOM ==========
@@ -1813,7 +2041,7 @@
                 if (e.key === 'Enter') handleUserContinue();
             });
             
-            // Admin - ora usa il modal
+            // Admin - usa il modal
             document.getElementById('adminBtn').addEventListener('click', showAdminModal);
             document.getElementById('modalAdminConfirm').addEventListener('click', handleAdminAccess);
             document.getElementById('modalAdminCancel').addEventListener('click', hideAdminModal);
@@ -1868,24 +2096,13 @@
                 }
             });
             
-            // Touch events per mobile
-            setupTouchEvents();
-        }
-
-        // ========== SETUP TOUCH EVENTS ==========
-        function setupTouchEvents() {
-            // Touch feedback per pulsanti
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(btn => {
-                btn.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.98)';
-                });
-                btn.addEventListener('touchend', function() {
-                    this.style.transform = '';
-                });
-                btn.addEventListener('touchcancel', function() {
-                    this.style.transform = '';
-                });
+            // Click fuori dal modal per chiudere
+            document.getElementById('adminModal').addEventListener('click', function(e) {
+                if (e.target.id === 'adminModal') hideAdminModal();
+            });
+            
+            document.getElementById('photoModal').addEventListener('click', function(e) {
+                if (e.target.id === 'photoModal') closePhotoModal();
             });
         }
 
@@ -1894,6 +2111,7 @@
             const modal = document.getElementById('adminModal');
             const input = document.getElementById('adminCodeInput');
             modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 input.focus();
             }, 100);
@@ -1902,6 +2120,7 @@
         function hideAdminModal() {
             document.getElementById('adminModal').style.display = 'none';
             document.getElementById('adminCodeInput').value = '';
+            document.body.style.overflow = 'auto';
         }
 
         // ========== GESTIONE UTENTE ==========
@@ -1957,6 +2176,8 @@
                 localStorage.removeItem('laureaUserName');
                 currentUserName = '';
                 hideApp();
+                document.getElementById('userNameInput').value = '';
+                document.getElementById('userNameInput').focus();
             }
         }
 
@@ -2132,7 +2353,7 @@
             // Mostra loading galleria
             const galleryLoading = document.getElementById('galleryLoading');
             if (galleryLoading) {
-                galleryLoading.style.display = 'block';
+                galleryLoading.style.display = 'flex';
             }
             
             // Ascolta cambiamenti in tempo reale
@@ -2177,12 +2398,18 @@
             const emptyMsg = document.getElementById('emptyGallery');
             
             if (!photos || photos.length === 0) {
-                if (emptyMsg) emptyMsg.style.display = 'block';
+                if (emptyMsg) {
+                    emptyMsg.style.display = 'block';
+                    emptyMsg.classList.remove('d-none');
+                }
                 if (gallery) gallery.innerHTML = '';
                 return;
             }
             
-            if (emptyMsg) emptyMsg.style.display = 'none';
+            if (emptyMsg) {
+                emptyMsg.style.display = 'none';
+                emptyMsg.classList.add('d-none');
+            }
             
             // Mostra solo le ultime 60 foto nella galleria pubblica
             const recentPhotos = photos.slice(0, 60);
@@ -2216,13 +2443,19 @@
             const emptyMsg = document.getElementById('adminEmptyGallery');
             
             if (!photos || photos.length === 0) {
-                if (emptyMsg) emptyMsg.style.display = 'block';
+                if (emptyMsg) {
+                    emptyMsg.style.display = 'block';
+                    emptyMsg.classList.remove('d-none');
+                }
                 if (adminGallery) adminGallery.innerHTML = '';
                 updateSelectionBar();
                 return;
             }
             
-            if (emptyMsg) emptyMsg.style.display = 'none';
+            if (emptyMsg) {
+                emptyMsg.style.display = 'none';
+                emptyMsg.classList.add('d-none');
+            }
             
             if (adminGallery) {
                 adminGallery.innerHTML = photos.map((photo, index) => `
@@ -2237,23 +2470,23 @@
                              onclick="openPhotoModal('${photo.url.replace(/'/g, "\\'")}', '${escapeHtml(photo.userName)}', '${formatDate(photo.timestamp)}')"
                              style="cursor: pointer;">
                         <div class="admin-photo-info">
-                            <div style="font-weight: 600; color: var(--viola-laurea);">
+                            <div style="font-weight: 600; color: var(--viola-laurea); font-size: 0.85rem;">
                                 <i class="fas fa-user"></i> ${escapeHtml(photo.userName)}
                             </div>
-                            <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 3px;">
                                 ${formatDate(photo.timestamp)}
                             </div>
-                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">
+                            <div style="font-size: 0.7rem; color: #888; margin-top: 2px;">
                                 ${photo.fileSize ? ((photo.fileSize / 1024 / 1024).toFixed(2) + ' MB') : 'Dimensione sconosciuta'}
                             </div>
                             <div class="photo-actions">
                                 <button class="btn btn-danger btn-small" 
-                                        style="padding: 5px 10px; font-size: 0.8rem;"
+                                        style="padding: 4px 8px; font-size: 0.75rem; min-height: 32px;"
                                         onclick="deleteSinglePhoto('${photo.id.replace(/'/g, "\\'")}', '${(photo.imgbbId || '').replace(/'/g, "\\'")}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <button class="btn btn-success btn-small" 
-                                        style="padding: 5px 10px; font-size: 0.8rem;"
+                                        style="padding: 4px 8px; font-size: 0.75rem; min-height: 32px;"
                                         onclick="downloadSinglePhoto('${photo.id.replace(/'/g, "\\'")}')">
                                     <i class="fas fa-download"></i>
                                 </button>
@@ -2491,7 +2724,7 @@
                 // Crea nome file
                 const safeUserName = (photo.userName || 'Anonimo').replace(/[^a-z0-9]/gi, '_');
                 const safeFileName = (photo.fileName || 'foto').replace(/[^a-z0-9.]/gi, '_');
-                const fileName = `Laurea-Mati_${safeUserName}_${safeFileName}`;
+                const fileName = `LaureaMati_${safeUserName}_${safeFileName}`;
                 
                 // Crea link di download
                 const link = document.createElement('a');
@@ -2601,62 +2834,59 @@
                 let downloaded = 0;
                 let errors = 0;
                 
-                // Aggiungi un file di informazioni
-                const info = {
-                    evento: "Laurea Mati",
-                    totaleFoto: photos.length,
-                    utentiUnici: [...new Set(photos.map(p => p.userName))].length,
-                    dataGenerazione: new Date().toISOString(),
-                    note: "Album fotografico della festa di laurea"
-                };
-                zip.file('INFO_EVENTO.json', JSON.stringify(info, null, 2));
+                // Aggiungi la cartella principale
+                const fotoFolder = zip.folder("Foto Laurea Mati");
                 
-                // Organizza per data
-                const photosByDate = {};
-                photos.forEach(photo => {
-                    const date = new Date(photo.timestamp || Date.now()).toISOString().split('T')[0];
-                    if (!photosByDate[date]) photosByDate[date] = [];
-                    photosByDate[date].push(photo);
-                });
+                // Ordina le foto per data (più vecchie prima)
+                const sortedPhotos = [...photos].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
                 
-                for (const [date, datePhotos] of Object.entries(photosByDate)) {
-                    for (const photo of datePhotos) {
-                        try {
-                            if (!photo.url) continue;
-                            
-                            const response = await fetch(photo.url);
-                            if (!response.ok) continue;
-                            
-                            const blob = await response.blob();
-                            
-                            // Crea nome file
-                            const safeUserName = (photo.userName || 'Anonimo').replace(/[^a-z0-9]/gi, '_');
-                            const safeFileName = (photo.fileName || 'foto').replace(/[^a-z0-9.]/gi, '_');
-                            const fileName = `${safeUserName}_${safeFileName}`;
-                            
-                            zip.file(`Foto/${date}/${fileName}`, blob);
-                            
-                            downloaded++;
-                            
-                            // Aggiorna messaggio ogni 10 foto
-                            if (downloaded % 10 === 0) {
-                                showMessage(`⏳ Preparate ${downloaded}/${photos.length} foto...`, 'success');
-                            }
-                            
-                        } catch (error) {
-                            console.error(`Errore download foto ${photo.fileName}:`, error);
-                            errors++;
+                for (let i = 0; i < sortedPhotos.length; i++) {
+                    const photo = sortedPhotos[i];
+                    try {
+                        if (!photo.url) continue;
+                        
+                        const response = await fetch(photo.url);
+                        if (!response.ok) continue;
+                        
+                        const blob = await response.blob();
+                        
+                        // Crea nome file nel formato LaureaMati_0001, LaureaMati_0002, etc.
+                        const number = (i + 1).toString().padStart(4, '0');
+                        
+                        // Determina estensione dal blob o dal tipo MIME
+                        let extension = 'jpg';
+                        if (photo.fileType) {
+                            if (photo.fileType.includes('png')) extension = 'png';
+                            else if (photo.fileType.includes('gif')) extension = 'gif';
+                            else if (photo.fileType.includes('jpeg') || photo.fileType.includes('jpg')) extension = 'jpg';
+                            else if (photo.fileType.includes('webp')) extension = 'webp';
                         }
+                        
+                        const fileName = `LaureaMati_${number}.${extension}`;
+                        
+                        // Aggiungi direttamente alla cartella principale
+                        fotoFolder.file(fileName, blob);
+                        
+                        downloaded++;
+                        
+                        // Aggiorna messaggio ogni 10 foto
+                        if (downloaded % 10 === 0) {
+                            showMessage(`⏳ Preparate ${downloaded}/${photos.length} foto...`, 'success');
+                        }
+                        
+                    } catch (error) {
+                        console.error(`Errore download foto ${photo.fileName}:`, error);
+                        errors++;
                     }
                 }
                 
                 if (downloaded > 0) {
-                    // Genera ZIP
+                    // Genera ZIP SENZA file JSON - solo cartella con foto
                     const content = await zip.generateAsync({ type: 'blob' });
                     
                     // Scarica ZIP
                     const date = new Date().toISOString().split('T')[0];
-                    saveAs(content, `TUTTE_Foto-Laurea-Mati_${date}.zip`);
+                    saveAs(content, `Foto_Laurea_Mati_${date}.zip`);
                     
                     if (errors === 0) {
                         showMessage(`✅ ${downloaded} foto scaricate con successo!`, 'success');
@@ -2712,57 +2942,52 @@
             qrCodeDiv.innerHTML = '';
             
             try {
-                // Crea un canvas per il QR code
-                const canvas = document.createElement('canvas');
+                // Pulisci la stringa URL
+                const url = GITHUB_PAGES_URL.trim();
                 
-                // Genera il QR code sul canvas con URL FISSO
-                QRCode.toCanvas(canvas, GITHUB_PAGES_URL, {
-                    width: 200,
-                    margin: 2,
-                    color: { 
-                        dark: '#5A189A',
-                        light: '#FFFFFF'
-                    },
-                    errorCorrectionLevel: 'H'
-                }, function (error) {
-                    if (error) {
-                        console.error('❌ Errore generazione QR:', error);
-                        // Fallback: mostra URL
-                        qrCodeDiv.innerHTML = `
-                            <div style="text-align: center; padding: 20px;">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff9800;"></i>
-                                <p style="margin-top: 10px; color: #666;">
-                                    QR Code non disponibile<br>
-                                    Condividi il link: <br>
-                                    <input type="text" value="${GITHUB_PAGES_URL}" readonly 
-                                           style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px;"
-                                           onclick="this.select()">
-                                </p>
-                            </div>
-                        `;
-                    } else {
-                        // Aggiungi il canvas al div
-                        qrCodeDiv.appendChild(canvas);
-                        
-                        // Aggiungi stili
-                        canvas.style.display = 'block';
-                        canvas.style.margin = '0 auto';
-                        canvas.style.borderRadius = '10px';
-                        canvas.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                    }
-                });
+                // Crea il QR code
+                const qr = qrcode(0, 'H'); // Tipo 0 (automatico), correzione errore High
+                qr.addData(url);
+                qr.make();
+                
+                // Crea immagine QR code
+                const imgSrc = qr.createDataURL(10, 0); // Dimensione 10px per cella, margine 0
+                
+                // Crea elemento img
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = "QR Code per accesso album";
+                img.style.width = '180px';
+                img.style.height = '180px';
+                img.style.display = 'block';
+                img.style.margin = '0 auto';
+                img.style.borderRadius = '8px';
+                img.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                img.style.backgroundColor = 'white';
+                img.style.padding = '8px';
+                
+                qrCodeDiv.appendChild(img);
+                
+                // Aggiungi testo sotto se vuoi
+                const text = document.createElement('p');
+                text.innerHTML = `<small style="font-size: 0.8rem; color: #666;">Scansiona per accedere all'album</small>`;
+                text.style.textAlign = 'center';
+                text.style.marginTop = '8px';
+                qrCodeDiv.appendChild(text);
+                
             } catch (error) {
-                console.error('❌ Errore QR:', error);
-                // Fallback alternativo
+                console.error('❌ Errore generazione QR:', error);
+                // Fallback semplice
                 qrCodeDiv.innerHTML = `
-                    <div style="text-align: center; padding: 30px;">
-                        <p style="color: var(--viola-laurea); font-weight: bold; margin-bottom: 10px;">
-                            Condividi il link dell'album:
-                        </p>
-                        <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid var(--oro-laurea);">
-                            <input type="text" value="${GITHUB_PAGES_URL}" readonly 
-                                   style="width: 100%; padding: 10px; border: none; text-align: center; font-size: 0.9rem;"
-                                   onclick="this.select()">
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; display: inline-block;">
+                            <i class="fas fa-qrcode" style="font-size: 3rem; color: #5A189A; opacity: 0.5;"></i>
+                            <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+                                <strong>Link dell'album:</strong><br>
+                                <input type="text" value="${GITHUB_PAGES_URL}" readonly 
+                                       style="width: 100%; padding: 8px; margin-top: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; font-size: 0.85rem;"
+                                       onclick="this.select()">
+                            </p>
                         </div>
                     </div>
                 `;
@@ -2770,19 +2995,66 @@
         }
 
         function downloadQRCode() {
-            const canvas = document.querySelector('#qrcode canvas');
-            if (!canvas) {
+            const qrCodeDiv = document.getElementById('qrcode');
+            const img = qrCodeDiv.querySelector('img');
+            
+            if (!img || !img.src) {
                 showMessage('QR Code non disponibile', 'error');
                 return;
             }
             
             try {
-                const link = document.createElement('a');
-                link.download = 'QR-Code-Laurea-Mati.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                // Crea un canvas per il download
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 400;
+                canvas.height = 450;
                 
-                showMessage('✅ QR Code scaricato', 'success');
+                // Sfondo bianco
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Crea un'immagine temporanea
+                const tempImg = new Image();
+                tempImg.crossOrigin = "anonymous";
+                
+                tempImg.onload = function() {
+                    // Disegna il QR code
+                    ctx.drawImage(tempImg, 100, 50, 200, 200);
+                    
+                    // Aggiungi titolo
+                    ctx.fillStyle = '#5A189A';
+                    ctx.font = 'bold 22px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('ALBUM FOTOGRAFICO', canvas.width/2, 300);
+                    
+                    // Aggiungi sottotitolo
+                    ctx.fillStyle = '#333';
+                    ctx.font = '18px Arial';
+                    ctx.fillText('Laurea Mati', canvas.width/2, 330);
+                    
+                    // Aggiungi URL
+                    ctx.fillStyle = '#666';
+                    ctx.font = '14px Arial';
+                    ctx.fillText(GITHUB_PAGES_URL, canvas.width/2, 380);
+                    
+                    // Aggiungi data
+                    ctx.fillStyle = '#888';
+                    ctx.font = '12px Arial';
+                    const date = new Date().toLocaleDateString('it-IT');
+                    ctx.fillText(`Generato il ${date}`, canvas.width/2, 420);
+                    
+                    // Scarica
+                    const link = document.createElement('a');
+                    link.download = 'QR-Code-Laurea-Mati.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    showMessage('✅ QR Code scaricato', 'success');
+                };
+                
+                tempImg.src = img.src;
+                
             } catch (error) {
                 console.error('❌ Errore download QR:', error);
                 showMessage('Errore nel download del QR Code', 'error');
@@ -2794,7 +3066,18 @@
                 showMessage('✅ Link copiato negli appunti!', 'success');
             }).catch(err => {
                 console.error('Errore copia:', err);
-                showMessage('❌ Errore nella copia del link', 'error');
+                // Fallback per browser più vecchi
+                const textArea = document.createElement('textarea');
+                textArea.value = GITHUB_PAGES_URL;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showMessage('✅ Link copiato negli appunti!', 'success');
+                } catch (e) {
+                    showMessage('❌ Errore nella copia del link', 'error');
+                }
+                document.body.removeChild(textArea);
             });
         }
 
@@ -2842,6 +3125,7 @@
             document.getElementById('userSection').style.display = 'block';
             document.getElementById('appSection').style.display = 'none';
             document.getElementById('adminSection').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         function showApp() {
@@ -2967,6 +3251,7 @@
             if (modalImage && modal) {
                 modalImage.src = url;
                 modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
                 
                 // Aggiorna titolo della pagina
                 document.title = `Foto di ${author} - ${date} | Laurea Mati`;
@@ -2979,6 +3264,7 @@
             
             if (modal) {
                 modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
             
             if (modalImage) {
@@ -3005,6 +3291,17 @@
                 }
             }
         }, true);
+        
+        // Ottimizza performance su mobile
+        let lastTap = 0;
+        document.addEventListener('touchend', function(e) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 500 && tapLength > 0) {
+                e.preventDefault(); // Previeni doppio tap zoom
+            }
+            lastTap = currentTime;
+        }, false);
     </script>
 </body>
 </html>
